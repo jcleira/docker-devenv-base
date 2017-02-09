@@ -24,12 +24,13 @@ ENV LC_ALL en_US.UTF-8
 RUN npm install -g grunt-cli yarn create-react-app
 
 # Creates a custom user to avoid using root.
-# We do also force the 1000 UID to avoid permissions 
-# problems. There are some issues about it:
+# We do also force the 2000 UID to match the host 
+# user and avoid permissions problems. 
+# There are some issues about it:
 # https://github.com/docker/docker/issues/2259 
 # https://github.com/nodejs/docker-node/issues/289
-RUN useradd -ms /bin/bash dev && \
-  usermod -o -u 1000 dev 
+RUN  useradd -ms /bin/bash dev && \
+  usermod -o -u 2000 dev 
 
 # Set the working dir
 WORKDIR /home/dev
