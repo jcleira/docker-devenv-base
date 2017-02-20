@@ -1,4 +1,4 @@
-FROM node:latest
+FROM node:6.9.5
 LABEL maintainer "jmc.leira@gmail.com"
 
 # Install development tools.
