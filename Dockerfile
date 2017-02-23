@@ -44,7 +44,7 @@ USER dev
 
 # Download custom preferences using dotfiles.
 RUN git clone https://github.com/jcorral/dotfiles.git /home/dev/dotfiles && \
-  cd /home/dev/dotfiles &&  git submodule init && git submodule update
+  cd /home/dev/dotfiles &&  git submodule update --init --recursive
 
 # Make the vim custom preferences, bash profile and custom scripts
 # available for the dev user.
