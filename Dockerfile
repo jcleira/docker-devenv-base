@@ -7,8 +7,11 @@ RUN apt-get update && apt-get install -y \
   cmake \
   locales \
   python-dev \
-  python3-dev \
-  vim
+  python3-dev
+
+# Install vim from github
+RUN git clone https://github.com/vim/vim.git /tmp/vim && \
+  cd /tmp/vim && make && make install
 
 # Configure locales.
 ENV DEBIAN_FRONTEND noninteractive
@@ -44,7 +47,7 @@ USER dev
 
 # Download custom preferences using dotfiles.
 RUN git clone https://github.com/jcorral/dotfiles.git /home/dev/dotfiles && \
-  cd /home/dev/dotfiles &&  git submodule update --init --recursive
+  cd /home/dev/dotfiles && git submodule update --init --recursive
 
 # Make the vim custom preferences, bash profile and custom scripts
 # available for the dev user.
