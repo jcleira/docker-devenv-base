@@ -24,6 +24,9 @@ RUN git clone https://github.com/vim/vim.git /tmp/vim && \
             --enable-gui=gtk2 --enable-cscope --prefix=/usr && \
   make && make install
 
+# Install the AWS cli console
+RUN pip install awscli
+
 # Configure locales.
 ENV DEBIAN_FRONTEND noninteractive
 RUN echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && \
