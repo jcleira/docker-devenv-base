@@ -24,6 +24,10 @@ RUN git clone https://github.com/vim/vim.git /tmp/vim && \
             --enable-gui=gtk2 --enable-cscope --prefix=/usr && \
   make && make install
 
+# Install pip from get-pip
+ADD https://bootstrap.pypa.io/get-pip.py /tmp/get-pip.py
+RUN python /tmp/get-pip.py
+
 # Install the AWS cli console
 RUN pip install awscli
 
