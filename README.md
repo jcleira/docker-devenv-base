@@ -1,10 +1,10 @@
-# Dockerized JS development environment
-![Docker JS environment](http://i.imgur.com/8PwCETt.png)
+# Dockerized Base development environment
+![Docker logo](https://www.docker.com/sites/default/files/horizontal_large.png)
 
-This repository contains my personal dockerized development environment for JS, It's customized using my dotfiles and crafted with love.
+This repository contains a base docker development environment, It is customized using my dotfiles.
 
 Usage:
 
 ```bash
-docker run -t -i -v /home/<user>/.ssh:/home/dev/.ssh -v /home/<user>/.ssh:/home/dev/.ssh -v /home/<user>/Code:/home/dev/Code --net=host jcorral/docker-devenv-js
+docker run -t -i -v /home/<user>/.ssh:/home/dev/.ssh -v /home/<user>/.ssh:/home/dev/.ssh -v /home/<user>/Code:/home/dev/Code --net=host jcorral/docker-devenv-base
 ```
