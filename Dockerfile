@@ -1,79 +1,68 @@
-FROM node:6.9.5
+FROM alpine:latest
 LABEL maintainer "jmc.leira@gmail.com"
 
-# Install development tools.
-RUN apt-get update && apt-get install -y \
-  # Base dependencies.
-  build-essential \
+# Install dependencies
+RUN apk add --update --virtual build-deps \
+  build-base \
+  ctags \
   git \
-  cmake \
-  locales \
-  curl \
-  # oh-my-zsh dependencies.
+  libx11-dev \
+  libxpm-dev \
+  libxt-dev \
+  make \
+  ncurses-dev \
+  python \
+  python-dev \
+  bash \
   zsh \
-  #YouCompleteme dependencies
-  libncurses5-dev \
-  libncursesw5-dev \
-  nodejs \
-  npm \
-  # AWS cli dependencies
-  python-pip && \
-  pip install --upgrade pip
+  git \
+  python \
+  cmake \
+  openssh-client
 
+RUN git clone https://github.com/vim/vim.git /tmp/vim \
+    && cd /tmp/vim \
+    && ./configure --with-features=huge \
+                   --enable-multibyte \
+                   --enable-rubyinterp=yes \
+                   --enable-pythoninterp=yes \
+                   --enable-python3interp=yes \
+                   --with-python-config-dir=/usr/lib/python2.7/config \
+                   --enable-perlinterp=yes \
+                   --enable-luainterp=yes \
+                   --enable-gui=gtk2 \
+                   --enable-cscope \
+                   --prefix=/usr/local \
+    && make install
 
-# Configure locales.
-ENV DEBIAN_FRONTEND noninteractive
-RUN echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && \
-    locale-gen en_US.UTF-8 && \
-    dpkg-reconfigure locales && \
-    /usr/sbin/update-locale LANG=en_US.UTF-8
-
-ENV LANG en_US.UTF-8
-ENV LANGUAGE en_US.UTF-8
-ENV LC_ALL en_US.UTF-8
-
-# Install vim from github
-RUN git clone https://github.com/vim/vim.git /tmp/vim && \
-  cd /tmp/vim && \
-  ./configure --with-features=huge \
-            --enable-multibyte \
-            --enable-rubyinterp=yes \
-            --enable-pythoninterp=yes \
-            --with-python-config-dir=/usr/lib/python2.7/config-x86_64-linux-gnu \
-            --enable-python3interp=yes \
-            --with-python3-config-dir=/usr/lib/python3.5/config-3.4m-x86_64-linux-gnu \
-            --enable-perlinterp=yes \
-            --enable-luainterp=yes \
-            --enable-gui=gtk2 --enable-cscope --prefix=/usr && \
-  make && make install
-
-# Install the AWS cli console
-RUN pip install awscli
-
+# Creates a custom user to avoid using root
 # We do also force the 2000 UID to match the host
-# user and avoid permissions problems.
+# user and avoid permissions problems
 # There are some issues about it:
 # https://github.com/docker/docker/issues/2259
 # https://github.com/nodejs/docker-node/issues/289
-RUN  useradd -ms /bin/bash dev && \
-  usermod -o -u 2000 dev
+RUN  adduser -D -u 2000 dev
 
-# Set the working dir
+# Configure the dev user
+USER dev
 WORKDIR /home/dev
 
-# Run from the dev user.
-USER dev
+# Install oh my zsh
+RUN wget https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh -O - | zsh || true
 
-RUN git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf && \
-  ~/.fzf/install --bin
+# Instal fzf
+RUN git clone --depth 1 https://github.com/junegunn/fzf.git /home/dev/.fzf \
+    && /home/dev/.fzf/install --bin
 
-# Configure custom preferences using dotfiles.
-RUN git clone https://github.com/jcorral/dotfiles.git ~/Code/dotfiles  && \
-  cd ~/Code/dotfiles && \
-  git submodule update --init --recursive && \
-  ./configure.sh
+# Download my personal dotfiles
+RUN git clone https://github.com/jcorral/dotfiles.git /home/dev/dotfiles \
+  && cd /home/dev/dotfiles \
+  && git submodule update --init --recursive
 
-# Install oh-my-zsh
-RUN git clone git://github.com/robbyrussell/oh-my-zsh.git ~/.oh-my-zsh
+# Make vim's custom preferences & zsh's profile available for the dev user
+RUN ln -fs /home/dev/dotfiles/.zshrc /home/dev/.zshrc \
+ && ln -fs /home/dev/dotfiles/.vim /home/dev/.vim \
+ && ln -fs /home/dev/dotfiles/.vimrc /home/dev/.vimrc
 
-RUN ~/Code/dotfiles/.vim/bundle/YouCompleteMe/install.py --tern-completer
+# Configure the .vim YouCompleteMe plugin
+RUN /home/dev/dotfiles/.vim/bundle/YouCompleteMe/install.py
