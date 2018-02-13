@@ -41,7 +41,7 @@ RUN git clone https://github.com/vim/vim.git /tmp/vim \
 # There are some issues about it:
 # https://github.com/docker/docker/issues/2259
 # https://github.com/nodejs/docker-node/issues/289
-RUN  adduser -D -u 2000 dev
+RUN  adduser -D dev
 
 # Configure the dev user
 USER dev
