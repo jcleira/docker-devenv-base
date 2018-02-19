@@ -13,6 +13,7 @@ RUN apk add --update --virtual build-deps \
   ncurses-dev \
   python \
   python-dev \
+  py-pip \
   bash \
   zsh \
   git \
@@ -36,12 +37,9 @@ RUN git clone https://github.com/vim/vim.git /tmp/vim \
     && make install
 
 # Creates a custom user to avoid using root
-# We do also force the 2000 UID to match the host
-# user and avoid permissions problems
-# There are some issues about it:
-# https://github.com/docker/docker/issues/2259
-# https://github.com/nodejs/docker-node/issues/289
-RUN  adduser -D dev
+RUN adduser -D dev
+
+RUN pip install awscli
 
 # Configure the dev user
 USER dev
